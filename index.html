@@ -11,7 +11,7 @@
   nav { padding: 2rem 3rem; display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #d4cdc4; }
   nav .name { font-size: 1.1rem; letter-spacing: 0.04em; }
   nav .links { display: flex; gap: 2rem; }
-  nav a { text-decoration: none; color: #6b5f55; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; font-family: 'Helvetica Neue', Arial, sans-serif; }
+  nav a { text-decoration: none; color: #6b5f55; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; font-family: 'Helvetica Neue', Arial, sans-serif; cursor: pointer; }
   nav a:hover { color: #2a2420; }
 
   .hero { padding: 4rem 3rem 3rem; max-width: 640px; }
@@ -20,9 +20,9 @@
 
   .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 0 0 4rem; }
   .category { cursor: pointer; position: relative; overflow: hidden; background: #d4cdc4; }
-  .category img { width: 100%; aspect-ratio: 4/5; object-fit: cover; display: block; filter: brightness(0.88); transition: filter 0.4s ease, transform 0.4s ease; }
+  .category img { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; filter: brightness(0.88); transition: filter 0.4s ease, transform 0.4s ease; }
   .category:hover img { filter: brightness(0.65); transform: scale(1.03); }
-  .category .label { position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem 1.2rem 1.2rem; background: linear-gradient(transparent, rgba(30,22,16,0.7)); color: #f7f4ef; }
+  .category .label { position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem 1.2rem 1.2rem; background: linear-gradient(transparent, rgba(30,22,16,0.75)); color: #f7f4ef; }
   .category .label h2 { font-size: 1.05rem; font-weight: normal; letter-spacing: 0.02em; line-height: 1.3; }
   .category .label span { font-size: 0.75rem; font-family: 'Helvetica Neue', Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: #c9c0b4; margin-top: 0.3rem; display: block; }
   .category .label .view-hint { margin-top: 0.6rem; color: #f7f4ef; opacity: 0; transition: opacity 0.3s; font-size: 0.75rem; letter-spacing: 0.1em; }
@@ -36,9 +36,9 @@
   .close-btn { background: none; border: none; color: #a09080; font-size: 1.5rem; cursor: pointer; padding: 0.5rem; line-height: 1; }
   .close-btn:hover { color: #f7f4ef; }
 
-  .project-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; margin-bottom: 2px; }
+  .project-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; }
   .project-card { cursor: pointer; position: relative; overflow: hidden; background: #2a2420; }
-  .project-card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; filter: brightness(0.8); transition: filter 0.3s, transform 0.3s; }
+  .project-card img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; filter: brightness(0.8); transition: filter 0.3s, transform 0.3s; }
   .project-card:hover img { filter: brightness(0.55); transform: scale(1.03); }
   .project-card .plabel { position: absolute; bottom: 0; left: 0; right: 0; padding: 1.2rem 1rem 0.9rem; background: linear-gradient(transparent, rgba(20,15,10,0.75)); color: #f7f4ef; }
   .project-card .plabel h3 { font-size: 0.95rem; font-weight: normal; }
@@ -64,6 +64,16 @@
   .ss-nav:hover { background: rgba(255,255,255,0.06); }
   .ss-nav:disabled { opacity: 0.3; cursor: default; }
 
+  .about-bg { display: none; position: fixed; inset: 0; background: #f7f4ef; z-index: 300; overflow-y: auto; }
+  .about-bg.open { display: block; }
+  .about-inner { max-width: 680px; margin: 0 auto; padding: 4rem 2rem; }
+  .about-inner .about-nav { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 3rem; }
+  .about-inner .about-nav span { font-size: 1.1rem; letter-spacing: 0.04em; }
+  .about-inner .about-nav button { background: none; border: none; color: #6b5f55; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; font-family: 'Helvetica Neue', Arial, sans-serif; cursor: pointer; }
+  .about-inner .about-nav button:hover { color: #2a2420; }
+  .about-inner h2 { font-size: 1.6rem; font-weight: normal; margin-bottom: 2rem; line-height: 1.3; }
+  .about-inner p { font-size: 1rem; line-height: 1.85; color: #3a2e28; margin-bottom: 1.5rem; }
+
   @media (max-width: 700px) {
     nav { padding: 1.2rem; }
     .hero { padding: 2rem 1.2rem; }
@@ -72,6 +82,7 @@
     .ss-body { flex-direction: column; }
     .ss-text { width: 100%; border-left: none; border-top: 1px solid rgba(255,255,255,0.08); }
     .modal { padding: 1rem; }
+    .about-inner { padding: 2rem 1.2rem; }
   }
 </style>
 </head>
@@ -80,6 +91,7 @@
 <nav>
   <span class="name">Zach Harrington</span>
   <div class="links">
+    <a onclick="openAbout()">About</a>
     <a href="mailto:harrington.z@northeastern.edu">Contact</a>
   </div>
 </nav>
@@ -91,7 +103,8 @@
 
 <div class="grid">
   <div class="category" onclick="openCategory('pattern')">
-    <img src="./Pendant.jpg" alt="Pattern and Texture">
+    <!-- object-position: adjust "center center" if crop is off, e.g. "center top" or "center 30%" -->
+    <img src="./Pendant.jpg" alt="Pattern and Texture" style="object-position: center center;">
     <div class="label">
       <h2>Pattern &amp; Texture</h2>
       <span>Surface · Material · Finish</span>
@@ -99,7 +112,7 @@
     </div>
   </div>
   <div class="category" onclick="openCategory('form')">
-    <img src="./Labradoritesandstarsapphire pendant.jpg" alt="Structural Form and Flow">
+    <img src="./Labradoritesandstarsapphirependant.jpg" alt="Structural Form and Flow" style="object-position: center center;">
     <div class="label">
       <h2>Structural Form &amp; Flow</h2>
       <span>Structure · Proportion · Movement</span>
@@ -107,7 +120,7 @@
     </div>
   </div>
   <div class="category" onclick="openCategory('functional')">
-    <img src="./campingknife.jpg" alt="Functional Objects">
+    <img src="./tanto-styleutility.jpg" alt="Functional Objects" style="object-position: center center;">
     <div class="label">
       <h2>Functional Objects</h2>
       <span>Use · Durability · Craft</span>
@@ -146,6 +159,21 @@
   </div>
 </div>
 
+<div class="about-bg" id="aboutModal">
+  <div class="about-inner">
+    <div class="about-nav">
+      <span>Zach Harrington</span>
+      <button onclick="closeAbout()">← Back to portfolio</button>
+    </div>
+    <h2>About me</h2>
+    <p>My interest in creating things began through a piece of nature we called The Fort. Growing up, I had a creek near my house where all the neighborhood kids would gather to build forts, mold rudimentary pottery from the natural clay, attempt to fish, and create entire hierarchal societies, complete with organized power systems and the protection of private property. I was 7, no one was older than 12. Our central dogma consisted of just one unbreakable rule: all the forts, tools, and objects we created were to be from the creek and its natural surroundings, from scratch. To progress in this society, resourcefulness and usefulness were the most important traits.</p>
+    <p>As the inevitable years came and went, the older kids grew up and grew out, but I still spent time down there trying to perfect the primitive creek arts. I became sort of obsessed with building things from scratch. At around age 12 my workshop migrated from the creek to the family garage, and I discovered YouTube. I became interested in metals — looking at the world around me, I saw that it was metal and tools that were responsible for bringing us from creek-level sophistication to the luxuries of modernity. I used a Dremel tool to make knives from old saw blades, built foundries and forges from fires with makeshift bellows, took blacksmithing classes, and forged a knife from a bar of steel using no power tools. I made a recurve bow from a pair of skis.</p>
+    <p>I still had an urge to create, and I loved metal, so I began taking jewelry making classes at my local community college. The pandemic came after my freshman year, and I spent the time setting up a humble studio in my new garage, teaching myself to make my own clothes, work with leather, and generally branch out from metalwork. I started to take on more of an interest in all types of created things. Looking back, I see this time as when I began to use my hands not just as an exploratory pastime, but also expressively.</p>
+    <p>I returned to formally pursuing jewelry for the last half of high school, and around this time began applying to colleges. Because I was decent in math and physics and I liked working with my hands, engineering seemed like the obvious choice. I chose bioengineering because, in an abstract way of putting it, I was interested in how we — how our bodies — interact with what we create.</p>
+    <p style="color: #8a7a6a; font-size: 0.9rem;">Northeastern University, B.S. Bioengineering · Concentration in Medical Devices and Bioimaging · Expected May 2027<br>Currently on co-op at MIT Traverso/Langer Laboratory (L4TE)</p>
+  </div>
+</div>
+
 <script>
 const data = {
   pattern: {
@@ -155,6 +183,7 @@ const data = {
         title: "Pendant",
         tag: "Sterling silver",
         thumb: "./Pendant.jpg",
+        thumbPos: "center center",
         slides: [
           { img: "./Pendant.jpg", subtitle: "Geometric punch pattern", caption: "I explored how simple geometric shapes can gain complexity through repeated punch patterns. In this piece, made for my AP 3D art portfolio, I laid 81 holes and carefully engraved diagonals to create a checkerboard pattern. I used a dapping block with a series of punches to curve the square, and made rectangular mountings for a chain to complement the squareness of the piece." },
           { img: "./Pendantprocess.jpg", subtitle: "Process", caption: "Work in progress — laying out and punching the grid pattern." }
@@ -164,6 +193,7 @@ const data = {
         title: "Woven Metal, prototype",
         tag: "Sterling silver",
         thumb: "./Prototype.jpg",
+        thumbPos: "center center",
         slides: [
           { img: "./Prototype.jpg", subtitle: "Woven sheet metal cylinder", caption: "This piece was inspired by a few things. I wanted to experiment with texture and form, and I was interested in making simple shapes intricate and nuanced. I wove sheet metal by inserting triangle pieces into a cut blank, soldered, textured with a texturing hammer, and cold shaped into a cylinder before soldering a support ring on the bottom. This piece is unfinished — eventually I would like to return to the idea and create a pair of lantern-shaped earrings." },
           { img: "./Prototypeprocess.jpg", subtitle: "Process", caption: "Fitting and weaving the triangle inserts before soldering." }
@@ -173,6 +203,7 @@ const data = {
         title: "Mokume-gane Ring",
         tag: "Sterling silver and copper, pattern-welded",
         thumb: "./Mokumeganering.jpg",
+        thumbPos: "center center",
         slides: [
           { img: "./Mokumeganering.jpg", subtitle: "Pattern-welded ring", caption: "Pattern-welding any material is notoriously tricky, but I had become a confident enough metalsmith that I wanted to see if I could do it. I stacked alternating layers of sterling silver and copper sheet, and continuously sweated, lightly forged, and then proceeded to cold form it into a ring, solder, and polish." }
         ]
@@ -185,15 +216,17 @@ const data = {
       {
         title: "Labradorite and Star Sapphire Pendant",
         tag: "Star sapphire · Labradorite · Sterling silver",
-        thumb: "./Labradoritesandstarsapphire pendant.jpg",
+        thumb: "./Labradoritesandstarsapphirependant.jpg",
+        thumbPos: "center center",
         slides: [
-          { img: "./Labradoritesandstarsapphire pendant.jpg", subtitle: "Composition study in mixed stones", caption: "I had a pair of star sapphires and labradorites gifted to me, and so I made a matching set of pendants (the other was given away before I managed to get a photo). This piece was mostly an effort in composition. I spent a long time sketching and planning to see how these two stones could complement each other. I bezel-set the large labradorite with two hermes-like wings accentuating the teardrop curves of the dangling sapphire." }
+          { img: "./Labradoritesandstarsapphirependant.jpg", subtitle: "Composition study in mixed stones", caption: "I had a pair of star sapphires and labradorites gifted to me, and so I made a matching set of pendants (the other was given away before I managed to get a photo). This piece was mostly an effort in composition. I spent a long time sketching and planning to see how these two stones could complement each other. I bezel-set the large labradorite with two hermes-like wings accentuating the teardrop curves of the dangling sapphire." }
         ]
       },
       {
         title: "Stiletto",
         tag: "Tool steel · Cast brass · Bloodwood · Epoxy",
         thumb: "./stilleto.jpg",
+        thumbPos: "center center",
         slides: [
           { img: "./stilleto.jpg", subtitle: "Decorative blade study", caption: "Because this would be a decorative piece, I wanted to explore an unconventional handle shape that accentuates the thinness and fragility of the blade. I carved the bloodwood using hand files and a small belt sander. I annealed an old triangle file and used files and sandpaper to polish surfaces. For the guard, I cast brass wire into an ingot and formed it on a rolling mill, then drilled and fitted the tang. I quenched the steel in canola oil to re-harden it, tempered until oxide colors reached a straw color, and finished by gluing into the handle with epoxy." }
         ]
@@ -202,6 +235,7 @@ const data = {
         title: "Volcanoes, ring",
         tag: "Cast bronze · Lab-grown rubies",
         thumb: "./volcanoesring.jpg",
+        thumbPos: "center center",
         slides: [
           { img: "./volcanoesring.jpg", subtitle: "Lost wax cast bronze", caption: "This piece was inspired by the lost wax class I was taking. I really enjoyed how the wax would build and layer like lava, and so I wanted to lean into that motif. This was my first attempt at casting stones in place — and I was spared any cracked stones." },
           { img: "./volcanoesringprocess.jpg", subtitle: "Wax model", caption: "The wax form before casting, showing the layered lava-like buildup." }
@@ -216,6 +250,7 @@ const data = {
         title: "Wallet",
         tag: "Leather · Waxed thread",
         thumb: "./wallet.jpg",
+        thumbPos: "center center",
         slides: [
           { img: "./wallet.jpg", subtitle: "Stamped leather bifold", caption: "I needed a wallet and saw an opportunity to branch into a new medium. I used Illustrator to vectorize a raster image from Frog and Toad by Arnold Lobel, then uploaded it into CAD software where I extruded it and printed a stamp. I wet the leather and stamped it under weight until it dried. This wallet lasted me over 6 years and I've only just recently retired it." },
           { img: "./walletback.jpg", subtitle: "Back detail", caption: "Hand-stitched with waxed thread." }
@@ -225,6 +260,7 @@ const data = {
         title: "Camping Knife",
         tag: "1084 high-carbon steel · Brass · Tiger wood · Epoxy",
         thumb: "./campingknife.jpg",
+        thumbPos: "center center",
         slides: [
           { img: "./campingknife.jpg", subtitle: "Commissioned utility knife", caption: "This was the first knife commissioned to me. The customer wanted a multipurpose utility/camping knife, so I designed a grip that locks into the hand for heavier chopping operations but is light enough for delicate work. I included a distal taper to maintain low weight while staying rigid. The blade was made via stock removal and heat treated with an oil quench and two subsequent temper cycles at appropriate temperatures." }
         ]
@@ -233,6 +269,7 @@ const data = {
         title: "Tanto-style Utility",
         tag: "1084 high-carbon steel · Brass · Tiger wood · Epoxy",
         thumb: "./tanto-styleutility.jpg",
+        thumbPos: "center center",
         slides: [
           { img: "./tanto-styleutility.jpg", subtitle: "Hidden tang utility knife", caption: "I wanted a utility knife for leatherwork and was inspired by the sharp angles of Japanese tanto blades. I chose a hidden tang construction for more freedom with handle design. I added a hump so it could be held comfortably pen-style while cutting on a flat surface. I heat-treated the blade with a lighter temper for increased hardness and better edge retention." }
         ]
@@ -241,6 +278,7 @@ const data = {
         title: "Carving Utility",
         tag: "1084 high-carbon steel · Brass · Wenge · Epoxy",
         thumb: "./carvingutility.jpg",
+        thumbPos: "center center",
         slides: [
           { img: "./carvingutility.jpg", subtitle: "Carving and stock removal knife", caption: "I needed a knife that balanced a sharp point and thin edge for intricate carving with a thicker body for heavier stock removal. I chose a bulkier handle design with a hidden tang supported by two pins to provide adequate ergonomics for beefier cuts." }
         ]
@@ -257,7 +295,7 @@ function openCategory(key) {
   document.getElementById('categoryTitle').textContent = cat.title;
   document.getElementById('projectGrid').innerHTML = cat.projects.map((p, i) =>
     `<div class="project-card" onclick="openSlideshow('${key}',${i})">
-      <img src="${p.thumb}" alt="${p.title}">
+      <img src="${p.thumb}" alt="${p.title}" style="object-position:${p.thumbPos};">
       <div class="plabel"><h3>${p.title}</h3><p>${p.tag}</p></div>
     </div>`
   ).join('');
@@ -298,6 +336,8 @@ function renderSlide() {
 
 function goSlide(n) { currentSlide = n; renderSlide(); }
 function slideNav(dir) { currentSlide += dir; renderSlide(); }
+function openAbout() { document.getElementById('aboutModal').classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeAbout() { document.getElementById('aboutModal').classList.remove('open'); document.body.style.overflow = ''; }
 
 document.getElementById('categoryModal').addEventListener('click', function(e) {
   if (e.target === this) closeCategory();
