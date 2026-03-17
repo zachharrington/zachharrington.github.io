@@ -1,6 +1,96 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zach Harrington</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Georgia, 'Times New Roman', serif; background: #f7f4ef; color: #2a2420; }
+
+nav { padding: 2rem 3rem; display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #d4cdc4; }
+nav .name { font-size: 1.1rem; letter-spacing: 0.04em; }
+nav .links { display: flex; gap: 2rem; }
+nav a { text-decoration: none; color: #6b5f55; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; font-family: ‘Helvetica Neue’, Arial, sans-serif; cursor: pointer; }
+nav a:hover { color: #2a2420; }
+
+.hero { padding: 4rem 3rem 3rem; max-width: 640px; }
+.hero h1 { font-size: 2.2rem; font-weight: normal; line-height: 1.3; margin-bottom: 1rem; }
+.hero p { font-size: 1rem; color: #6b5f55; line-height: 1.7; font-family: ‘Helvetica Neue’, Arial, sans-serif; }
+
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 0 0 4rem; align-items: start; }
+.category { cursor: pointer; position: relative; overflow: hidden; background: #d4cdc4; }
+/* No aspect-ratio here — height is set by JS to match natural image ratio */
+.category img { width: 100%; display: block; filter: brightness(0.88); transition: filter 0.4s ease, transform 0.4s ease; }
+.category:hover img { filter: brightness(0.65); transform: scale(1.03); }
+.category .label { position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem 1.2rem 1.2rem; background: linear-gradient(transparent, rgba(30,22,16,0.75)); color: #f7f4ef; }
+.category .label h2 { font-size: 1.05rem; font-weight: normal; letter-spacing: 0.02em; line-height: 1.3; }
+.category .label span { font-size: 0.75rem; font-family: ‘Helvetica Neue’, Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: #c9c0b4; margin-top: 0.3rem; display: block; }
+.category .label .view-hint { margin-top: 0.6rem; color: #f7f4ef; opacity: 0; transition: opacity 0.3s; font-size: 0.75rem; letter-spacing: 0.1em; }
+.category:hover .view-hint { opacity: 1; }
+
+.modal-bg { display: none; position: fixed; inset: 0; background: rgba(20,15,10,0.92); z-index: 100; overflow-y: auto; }
+.modal-bg.open { display: block; }
+.modal { max-width: 960px; margin: 0 auto; padding: 2rem; }
+.modal-header { display: flex; justify-content: space-between; align-items: baseline; padding: 1.5rem 0 2rem; border-bottom: 1px solid rgba(255,255,255,0.12); margin-bottom: 2rem; }
+.modal-header h2 { color: #f7f4ef; font-size: 1.4rem; font-weight: normal; }
+.close-btn { background: none; border: none; color: #a09080; font-size: 1.5rem; cursor: pointer; padding: 0.5rem; line-height: 1; }
+.close-btn:hover { color: #f7f4ef; }
+
+.project-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; }
+.project-card { cursor: pointer; position: relative; overflow: hidden; background: #2a2420; }
+/* Same natural ratio approach for project cards */
+.project-card img { width: 100%; display: block; filter: brightness(0.8); transition: filter 0.3s, transform 0.3s; }
+.project-card:hover img { filter: brightness(0.55); transform: scale(1.03); }
+.project-card .plabel { position: absolute; bottom: 0; left: 0; right: 0; padding: 1.2rem 1rem 0.9rem; background: linear-gradient(transparent, rgba(20,15,10,0.75)); color: #f7f4ef; }
+.project-card .plabel h3 { font-size: 0.95rem; font-weight: normal; }
+.project-card .plabel p { font-size: 0.72rem; font-family: ‘Helvetica Neue’, Arial, sans-serif; letter-spacing: 0.06em; text-transform: uppercase; color: #b0a090; margin-top: 0.2rem; }
+
+.slideshow-bg { display: none; position: fixed; inset: 0; background: rgba(10,8,6,0.97); z-index: 200; }
+.slideshow-bg.open { display: flex; flex-direction: column; }
+.ss-header { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 2rem; border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; }
+.ss-header h3 { color: #f7f4ef; font-size: 1rem; font-weight: normal; }
+.ss-header button { background: none; border: none; color: #a09080; cursor: pointer; font-size: 1rem; padding: 0.4rem 0.8rem; font-family: ‘Helvetica Neue’, Arial, sans-serif; letter-spacing: 0.06em; }
+.ss-header button:hover { color: #f7f4ef; }
+.ss-body { flex: 1; display: flex; overflow: hidden; }
+.ss-img { flex: 1.2; display: flex; align-items: center; justify-content: center; padding: 2rem; overflow: hidden; }
+.ss-img img { max-width: 100%; max-height: calc(100vh - 160px); object-fit: contain; }
+.ss-text { width: 300px; flex-shrink: 0; padding: 2rem; border-left: 1px solid rgba(255,255,255,0.08); overflow-y: auto; }
+.ss-text h4 { color: #f7f4ef; font-size: 1.05rem; font-weight: normal; margin-bottom: 0.75rem; }
+.ss-text .tag { font-size: 0.7rem; font-family: ‘Helvetica Neue’, Arial, sans-serif; letter-spacing: 0.1em; text-transform: uppercase; color: #7a6a5a; margin-bottom: 1rem; }
+.ss-text p { font-family: ‘Helvetica Neue’, Arial, sans-serif; font-size: 0.85rem; line-height: 1.7; color: #b0a090; }
+.ss-footer { flex-shrink: 0; padding: 1rem 2rem; border-top: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 0.5rem; }
+.ss-dot { width: 6px; height: 6px; border-radius: 50%; background: #5a4a3a; cursor: pointer; border: none; transition: background 0.2s; }
+.ss-dot.active { background: #c9b89a; }
+.ss-nav { background: none; border: 1px solid rgba(255,255,255,0.15); color: #c9b89a; cursor: pointer; padding: 0.4rem 1rem; font-family: ‘Helvetica Neue’, Arial, sans-serif; font-size: 0.8rem; letter-spacing: 0.06em; margin-left: auto; }
+.ss-nav:hover { background: rgba(255,255,255,0.06); }
+.ss-nav:disabled { opacity: 0.3; cursor: default; }
+
+.about-bg { display: none; position: fixed; inset: 0; background: #f7f4ef; z-index: 300; overflow-y: auto; }
+.about-bg.open { display: block; }
+.about-inner { max-width: 680px; margin: 0 auto; padding: 4rem 2rem; }
+.about-inner .about-nav { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 3rem; }
+.about-inner .about-nav span { font-size: 1.1rem; letter-spacing: 0.04em; }
+.about-inner .about-nav button { background: none; border: none; color: #6b5f55; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; font-family: ‘Helvetica Neue’, Arial, sans-serif; cursor: pointer; }
+.about-inner .about-nav button:hover { color: #2a2420; }
+.about-inner h2 { font-size: 1.6rem; font-weight: normal; margin-bottom: 2rem; line-height: 1.3; }
+.about-inner h3 { font-size: 1.1rem; font-weight: normal; margin-bottom: 1rem; margin-top: 2rem; color: #5a4a3a; }
+.about-inner h4 { font-size: 0.9rem; font-weight: normal; font-family: ‘Helvetica Neue’, Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; color: #8a7a6a; margin-bottom: 0.75rem; margin-top: 1.5rem; }
+.about-inner p { font-size: 1rem; line-height: 1.85; color: #3a2e28; margin-bottom: 1.5rem; }
+
+@media (max-width: 700px) {
+nav { padding: 1.2rem; }
+.hero { padding: 2rem 1.2rem; }
+.grid { grid-template-columns: 1fr; }
+.project-grid { grid-template-columns: 1fr; }
+.ss-body { flex-direction: column; }
+.ss-text { width: 100%; border-left: none; border-top: 1px solid rgba(255,255,255,0.08); }
+.modal { padding: 1rem; }
+.about-inner { padding: 2rem 1.2rem; }
+}
+</style>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Portfolio</title>
@@ -8,29 +98,295 @@
 </head>
 <body>
 
+<nav>
+  <span class="name">Zach Harrington</span>
+  <div class="links">
+    <a onclick="openAbout()">About</a>
+    <a href="mailto:harrington.z@northeastern.edu">Contact</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Portfolio</h1>
+</div>
 <header>
     <h1>Welcome to My Portfolio!</h1>
 </header>
 
+<div class="grid" id="mainGrid">
+  <div class="category" onclick="openCategory('pattern')">
+    <img src="./Pendant.jpg" alt="Pattern and Texture" onload="fitThumb(this)">
+    <div class="label">
+      <h2>Pattern &amp; Texture</h2>
+      <span>Surface · Material · Finish</span>
+      <span class="view-hint">View projects →</span>
 <section>
     <h2>Projects</h2>
     <div>
         <h3>Project 1</h3>
         <img src="./Project1.png" alt="Project 1 Thumbnail">
     </div>
+  </div>
+  <div class="category" onclick="openCategory('form')">
+    <img src="./Labradoritependant" alt="Structural Form and Flow" onload="fitThumb(this)">
+    <div class="label">
+      <h2>Structural Form &amp; Flow</h2>
+      <span>Structure · Proportion · Movement</span>
+      <span class="view-hint">View projects →</span>
     <div>
         <h3>Project 2</h3>
         <img src="./Labradoritependant.jpg" alt="Project 2 Thumbnail">
     </div>
+  </div>
+  <div class="category" onclick="openCategory('functional')">
+    <img src="./tanto-styleutility.jpg" alt="Functional Objects" onload="fitThumb(this)">
+    <div class="label">
+      <h2>Functional Objects</h2>
+      <span>Use · Durability · Ergonomics</span>
+      <span class="view-hint">View projects →</span>
     <div>
         <h3>Project 3</h3>
         <img src="./Project3.png" alt="Project 3 Thumbnail">
     </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="categoryModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="categoryTitle"></h2>
+      <button class="close-btn" onclick="closeCategory()">✕</button>
+    </div>
+    <div class="project-grid" id="projectGrid"></div>
+  </div>
+</div>
+
+<div class="slideshow-bg" id="slideshowModal">
+  <div class="ss-header">
+    <h3 id="ssTitle"></h3>
+    <button onclick="closeSlideshow()">✕ Close</button>
+  </div>
+  <div class="ss-body">
+    <div class="ss-img"><img id="ssImage" src="" alt=""></div>
+    <div class="ss-text">
+      <div class="tag" id="ssTag"></div>
+      <h4 id="ssSubtitle"></h4>
+      <p id="ssCaption"></p>
+    </div>
+  </div>
+  <div class="ss-footer">
+    <div id="ssDots" style="display:flex;gap:6px;align-items:center;"></div>
+    <button class="ss-nav" id="ssPrev" onclick="slideNav(-1)">← Prev</button>
+    <button class="ss-nav" id="ssNext" onclick="slideNav(1)">Next →</button>
+  </div>
+</div>
+
+<div class="about-bg" id="aboutModal">
+  <div class="about-inner">
+    <div class="about-nav">
+      <span>Zach Harrington</span>
+      <button onclick="closeAbout()">← Back to portfolio</button>
+    </div>
+    <h2>About me</h2>
+    <p>Hello! I am a student at Northeastern University studying bioengineering with a concentration in biomedical devices and bioimaging. My art, design, and fabrication skills are mostly self-taught besides a few semester-long community college courses at Austin Community College (ACC) in jewelry fabrication techniques, lost wax casting, and stonesetting, among other techniques such as polishing and finishing.</p>
+    <h3>Skills and experience</h3>
+    <p>I have some skills and experience that are not obvious from my portfolio (or briefly mentioned). These include bacteriology wet lab work, CAD and 3D printing, MATLAB coding, analog electronics prototyping, woodworking with hand and power tools, textiles and sewing, and hot-work metalsmithing (blacksmithing/bladesmithing). Here's a few projects to get a sense of my experience:</p>
+    <h4>Bioengineering</h4>
+    <p>I'm currently working part-time (stayed on the team after a full-time co-op experience) at the Traverso Lab at MIT doing research on a probiotics team. We conduct throughput screens and design delivery devices that optimize probiotic formulations of facultative and obligate probiotic bacteria (for gastrointestinal and vaginal microbiomes). This involves much of the standard bacteriology wet lab equipment, as well as assays from in vivo samples (sheep models) and scanning electron microscopy (SEM).</p>
+    <p>I saved up for a 3D printer in my early teens and tinkered with it throughout high school and designed all sorts of gadgets and tools, however the computer that held my designs has since been lost. I used a free version of Fusion 360, the slicing software that came with my printer, and in college I learned and now primarily use SolidWorks.</p>
+    <p>I built, analyzed, and troubleshooted photoplethysmography and electroencephalography circuits using standard analog op-amp based bandpass filtering techniques, with further digital processing in MATLAB. This was for a class named Design of Biomedical Instrumentation. Throughout my degree, I have become comfortable in systems and signals analysis and design.</p>
+    <h4>Fabrication</h4>
+    <p>I've taken several dedicated woodworking classes outside of an institution where I've used the standard assortment of hand and power tools including the lathe, hand and power planes, all sorts of hand and power saws, table and hand-held routers, and chisel and carving work.</p>
+    <p>Most of my metalsmithing experience comes from my formal jewelry training, however I have worked with steel more than most jewelers of my experience. The knives shown in my portfolio were made from a stock removal process, however I have forged and finished several pieces from bar stock. I didn't have access to a belt sander, so I finished my blades using hand files and sandpaper. In jewelry making it's common for jewelers to make and maintain their own gravers, which I have also done. These projects are not shown because I don't have photos of them. I currently run a knife sharpening service with 20+ clients!</p>
+    <p>I designed and sewed a few pairs of pants and shirts during the pandemic (didn't take any pictures!).</p>
+    <h2>Personal Statement</h2>
+    <p>My interest in creating things began through a piece of nature we called The Fort. Growing up, I had a creek near my house where all the neighborhood kids would gather to build forts, mold rudimentary pottery from the natural clay, attempt to fish, and create entire hierarchal societies, complete with organized power systems and the protection of private property. I was 7, no one was older than 12. Our central dogma consisted of just one unbreakable rule: all the forts, tools, and objects we created were to be from the creek and its natural surroundings, from scratch. To progress in this society, resourcefulness and usefulness were the most important traits.</p>
+    <p>As the inevitable years came and went, the older kids grew up and grew out, but I still spent time down there trying to perfect the primitive creek arts. I became sort of obsessed with building things from scratch. At around age 12 my workshop migrated from the creek to the family garage, and I discovered YouTube. I became interested in metals — looking at the world around me, I saw that it was metal and tools that were responsible for bringing us from creek-level sophistication to the luxuries of modernity. I used a Dremel tool to make knives from old saw blades, built foundries and forges from fires with makeshift bellows, took blacksmithing classes, and forged a knife from a bar of steel using no power tools. I made a recurve bow from a pair of skis.</p>
+    <p>I still had an urge to create, and I loved metal, so I began taking jewelry making classes at my local community college. The pandemic came after my freshman year, and I spent the time setting up a humble studio in my new garage, teaching myself to make my own clothes, work with leather, and generally branch out from metalwork. I started to take on more of an interest in all types of created things. Looking back, I see this time as when I began to use my hands not just as an exploratory pastime, but also my way of expressing myself.</p>
+    <p>I am interested in how we, how us and our bodies, interact with what we create. I am endlessly fascinated by how we interact with, learn, experience, and compose materials and environments.</p>
+    <p style="color: #8a7a6a; font-size: 0.9rem;">Northeastern University, B.S. Bioengineering · Concentration in Medical Devices and Bioimaging · Expected May 2027<br>Currently on co-op at MIT Traverso/Langer Laboratory (L4TE)</p>
+  </div>
+</div>
+
+<script>
+function fitThumb(img) {
+  const ratio = img.naturalHeight / img.naturalWidth;
+  img.parentElement.style.height = (img.parentElement.offsetWidth * ratio) + 'px';
+}
+
+window.addEventListener('resize', () => {
+  document.querySelectorAll('.category img').forEach(img => {
+    if (img.complete && img.naturalWidth) fitThumb(img);
+  });
+  document.querySelectorAll('.project-card img').forEach(img => {
+    if (img.complete && img.naturalWidth) fitThumb(img);
+  });
+});
+
+const data = {
+  pattern: {
+    title: "Pattern & Texture",
+    projects: [
+      {
+        title: "Pendant",
+        tag: "Sterling silver",
+        thumb: "./Pendant.jpg",
+        slides: [
+          { img: "./Pendant.jpg", subtitle: "Geometric punch pattern", caption: "I explored how simple geometric shapes can gain complexity through repeated punch patterns. In this piece, made for my AP 3D art portfolio, I laid 81 holes and carefully engraved diagonals to create a checkerboard pattern. I used a dapping block with a series of punches to curve the square, and made rectangular mountings for a chain to complement the squareness of the piece." },
+          { img: "./Pendantprocess.jpg", subtitle: "Process", caption: "Work in progress. Drilling and engraving the grid pattern." }
+        ]
+      },
+      {
+        title: "Woven Metal, prototype",
+        tag: "Sterling silver",
+        thumb: "./Prototype.jpg",
+        slides: [
+          { img: "./Prototype.jpg", subtitle: "Woven sheet metal cylinder", caption: "This piece was inspired by a few things. I wanted to experiment with texture and form, and I was interested in making simple shapes intricate and nuanced. I wove sheet metal by inserting triangle pieces into a cut blank, soldered, textured with a texturing hammer, and cold shaped into a cylinder before soldering a support ring on the bottom. This piece is unfinished. Eventually I would like to return to the idea and create a pair of lantern-shaped earrings." },
+          { img: "./Prototypeprocess.jpg", subtitle: "Process", caption: "Fitting and weaving the triangle inserts before soldering." }
+        ]
+      },
+      {
+        title: "Mokume-gane Ring",
+        tag: "Sterling silver and copper, pattern-welded",
+        thumb: "./Mokumeganering.jpg",
+        slides: [
+          { img: "./Mokumeganering.jpg", subtitle: "Pattern-welded ring", caption: "Pattern-welding any material is notoriously tricky, but I had become a confident enough metalsmith that I wanted to see if I could do it. I stacked alternating layers of sterling silver and copper sheet, and continuously sweated, lightly forged, and then proceeded to cold form it into a ring, solder, and polish." }
+        ]
+      }
+    ]
+  },
+  form: {
+    title: "Structural Form & Flow",
+    projects: [
+            {
+        title: "Stiletto",
+        tag: "Tool steel · Cast brass · Bloodwood · Epoxy",
+        thumb: "./stilleto.jpg",
+        slides: [
+          { img: "./stilleto.jpg", subtitle: "Decorative blade study", caption: "Because this would be a decorative piece, I wanted to explore an unconventional handle shape that accentuates the thinness and fragility of the blade. I carved the bloodwood using hand files and a small belt sander. I annealed an old triangle file and used files and sandpaper to polish surfaces. For the guard, I cast brass wire into an ingot and formed it on a rolling mill, then drilled and fitted the tang. I quenched the steel in canola oil to re-harden it, tempered until oxide colors reached a straw color, and finished by gluing into the handle with epoxy." }
+        ]
+      },
+     {
+        title: "Labradorite and Star Sapphire Pendant",
+        tag: "Star sapphire · Labradorite · Sterling silver",
+        thumb: "./Labradoritependant.jpg",
+        slides: [
+          { img: "./Labradoritependant.jpg", subtitle: "Composition study in mixed stones", caption: "I had a pair of star sapphires and labradorites gifted to me, and so I made a matching set of pendants (the other was given away before I managed to get a photo). This piece was mostly an effort in composition. I spent a long time sketching and planning to see how these two stones could complement each other. I bezel-set the large labradorite with two hermes-like wings accentuating the teardrop curves of the dangling sapphire." }
+        ]
+      },
+      {
+        title: "Volcanoes, ring",
+        tag: "Cast bronze · Lab-grown rubies",
+        thumb: "./volcanoesring.jpg",
+        slides: [
+          { img: "./volcanoesring.jpg", subtitle: "Lost wax cast bronze", caption: "This piece was inspired by the lost wax class I was taking. I really enjoyed how the wax would build and layer like lava, and so I wanted to lean into that motif. This was my first attempt at casting stones in place. I was spared any cracked stones!" },
+          { img: "./volcanoesringprocess.jpg", subtitle: "Wax model", caption: "The wax form before casting, showing the layered lava-like buildup." }
+        ]
+      }
+    ]
+  },
+  functional: {
+    title: "Functional Objects",
+    projects: [
+      {
+        title: "Wallet",
+        tag: "Leather · Waxed thread",
+        thumb: "./wallet.jpg",
+        slides: [
+          { img: "./wallet.jpg", subtitle: "Stamped leather bifold", caption: "I needed a wallet and saw an opportunity to branch into a new medium. I used Illustrator to vectorize a raster image from Frog and Toad by Arnold Lobel, then uploaded it into CAD software where I extruded it and printed a stamp. I wet the leather and stamped it under weight until it dried. This wallet lasted me over 6 years and I've only just recently retired it." },
+          { img: "./walletback.jpg", subtitle: "Back detail", caption: "Hand-stitched with waxed thread." }
+        ]
+      },
+          {
+        title: "Tanto-style Utility",
+        tag: "1084 high-carbon steel · Brass · Tiger wood · Epoxy",
+        thumb: "./tanto-styleutility.jpg",
+        slides: [
+          { img: "./tanto-styleutility.jpg", subtitle: "Hidden tang utility knife", caption: "I wanted a utility knife for leatherwork and was inspired by the sharp angles of Japanese tanto blades. I chose a hidden tang construction for more freedom with handle design. I added a hump so it could be held comfortably pen-style while cutting on a flat surface. I heat-treated the blade with a lighter temper for increased hardness and better edge retention." }
+        ]
+      },
+      {
+        title: "Camping Knife",
+        tag: "1084 high-carbon steel · Brass · Tiger wood · Epoxy",
+        thumb: "./campingknife.jpg",
+        slides: [
+          { img: "./campingknife.jpg", subtitle: "Commissioned utility knife", caption: "This was the first knife commissioned to me. The customer wanted a multipurpose utility/camping knife, so I designed a grip that locks into the hand for heavier chopping operations but is light enough for delicate work. I included a distal taper to maintain low weight while staying rigid. The blade was made via stock removal and heat treated with an oil quench and two subsequent temper cycles at appropriate temperatures." }
+        ]
+      },
+ 
+      {
+        title: "Carving Utility",
+        tag: "1084 high-carbon steel · Brass · Wenge wood · Epoxy",
+        thumb: "./carvingutility.jpg",
+        slides: [
+          { img: "./carvingutility.jpg", subtitle: "Carving and utility knife", caption: "I needed a knife that balanced a sharp point and thin edge for intricate carving with a thicker body for heavier stock removal. I chose a bulkier handle design with a hidden tang supported by two pins to provide adequate ergonomics for beefier cuts." }
+        ]
+      }
+    ]
+  }
+};
+
+let currentCategory = null, currentProject = null, currentSlide = 0;
+
+function openCategory(key) {
+  currentCategory = key;
+  const cat = data[key];
+  document.getElementById('categoryTitle').textContent = cat.title;
+  document.getElementById('projectGrid').innerHTML = cat.projects.map((p, i) =>
+    `<div class="project-card" onclick="openSlideshow('${key}',${i})">
+      <img src="${p.thumb}" alt="${p.title}" onload="fitThumb(this)">
+      <div class="plabel"><h3>${p.title}</h3><p>${p.tag}</p></div>
+    </div>`
+  ).join('');
+  document.getElementById('categoryModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCategory() {
+  document.getElementById('categoryModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function openSlideshow(catKey, projIdx) {
+  currentCategory = catKey; currentProject = projIdx; currentSlide = 0;
+  renderSlide();
+  document.getElementById('slideshowModal').classList.add('open');
+}
+
+function closeSlideshow() {
+  document.getElementById('slideshowModal').classList.remove('open');
+}
+
+function renderSlide() {
+  const proj = data[currentCategory].projects[currentProject];
+  const slide = proj.slides[currentSlide];
+  document.getElementById('ssTitle').textContent = proj.title;
+  document.getElementById('ssTag').textContent = proj.tag;
+  document.getElementById('ssImage').src = slide.img;
+  document.getElementById('ssImage').alt = slide.subtitle;
+  document.getElementById('ssSubtitle').textContent = slide.subtitle;
+  document.getElementById('ssCaption').textContent = slide.caption;
+  document.getElementById('ssDots').innerHTML = proj.slides.map((_, i) =>
+    `<button class="ss-dot${i===currentSlide?' active':''}" onclick="goSlide(${i})"></button>`
+  ).join('');
+  document.getElementById('ssPrev').disabled = currentSlide === 0;
+  document.getElementById('ssNext').disabled = currentSlide === proj.slides.length - 1;
+}
+
+function goSlide(n) { currentSlide = n; renderSlide(); }
+function slideNav(dir) { currentSlide += dir; renderSlide(); }
+function openAbout() { document.getElementById('aboutModal').classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeAbout() { document.getElementById('aboutModal').classList.remove('open'); document.body.style.overflow = ''; }
 </section>
 
+document.getElementById('categoryModal').addEventListener('click', function(e) {
+  if (e.target === this) closeCategory();
+});
+</script>
 <footer>
     <p>Contact: email@example.com</p>
 </footer>
 
 </body>
+</html>
 </html>
